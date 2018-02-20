@@ -1,6 +1,8 @@
 #!/bin/bash
 set -ex
 
+adb devices -l | grep -q shamu || exit
+
 HTML_TMP=$(mktemp)
 curl -s 'https://kernels.franco-lnx.net/Nexus6/7.1.1/anyKernel/' > "$HTML_TMP"
 
