@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Turns out they have a desktop app. Definition use it instead of this.
+Turns out they have a desktop app. Definitely use it instead of this.
 https://www.rememberthemilk.com/services/mac/
 
 Overview:
