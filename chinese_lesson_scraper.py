@@ -1,10 +1,6 @@
+#!/usr/bin/env python3
 
-# coding: utf-8
-
-# In[1]:
-
-
-COOKIE = "add a cookie here"
+COOKIE = "_session_id=ID GOES HERE"
 COURSE_URLS = [
     "https://chinesezerotohero.teachable.com/courses/enrolled/185499",
     "https://chinesezerotohero.teachable.com/courses/enrolled/188342",
@@ -15,17 +11,12 @@ COURSE_URLS = [
 ]
 cookies_dict = dict(token.strip().split('=') for token in COOKIE.split(';'))
 
-
-# In[2]:
-
-
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
+from concurrent.futures import ThreadPoolExecutor
 
-
-# In[3]:
-
+exe = ThreadPoolExecutor(10)
 
 import re
 
@@ -33,37 +24,38 @@ lecture_hrefs = set()
 for url in COURSE_URLS:
     response = requests.get(url, cookies=cookies_dict)
     assert response.ok
+    print(url)
     for a in BeautifulSoup(response.text, 'lxml').find_all('a'):
         href = a.attrs.get('href', '')
         if re.match('/courses/[0-9]+/lectures/[0-9]+', href):
             lecture_hrefs.add(urljoin(url, href))
 
 
-# In[4]:
-
-
-# intentionally single threaded so I don't slam their servers
-
 video_urls = {}
 
-for lecture_href in lecture_hrefs:
+def get_urls(lecture_href):
     print(lecture_href)
     response = requests.get(lecture_href, cookies=cookies_dict)
     for a in BeautifulSoup(response.text, 'lxml').find_all('a', attrs={"class": "download"}):
-        video_urls[a.attrs['data-x-origin-download-name']] = a.attrs['href']
+        name = a.attrs['data-x-origin-download-name']
+        if name.endswith('.pdf'):
+            continue
+        video_urls[name] = a.attrs['href']
 
 
-# In[8]:
-
+[e for e in exe.map(get_urls, lecture_hrefs)]
 
 import os
 
-for name, url in sorted(video_urls.items()):
+def download_file(pair):
+    name, url = pair
     filename = 'mp4s/' + name
     if os.path.isfile(filename):
-        continue
+        return
     print(name)
-    # savings to a variable and writing is dumb but whatever
+    # there's a way to stream into a file but not worth effort
     response = requests.get(url)
     with open(filename, 'xb') as out:
         out.write(response.content)
+
+[e for e in exe.map(download_file, sorted(video_urls.items()))]
