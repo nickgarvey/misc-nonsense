@@ -2,12 +2,7 @@
 
 COOKIE = "_session_id=ID GOES HERE"
 COURSE_URLS = [
-    "https://chinesezerotohero.teachable.com/courses/enrolled/185499",
-    "https://chinesezerotohero.teachable.com/courses/enrolled/188342",
-    "https://chinesezerotohero.teachable.com/courses/enrolled/191818",
-    "https://chinesezerotohero.teachable.com/courses/enrolled/191830",
-    "https://chinesezerotohero.teachable.com/courses/enrolled/182498",
-    "https://chinesezerotohero.teachable.com/courses/enrolled/183827",
+    # urls here
 ]
 cookies_dict = dict(token.strip().split('=') for token in COOKIE.split(';'))
 
