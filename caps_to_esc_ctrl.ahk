@@ -1,3 +1,5 @@
+; Linux: https://gist.github.com/tanyuan/55bca522bf50363ae4573d4bdcf06e2e
+
 SetCapsLockState Off
 
 *CapsLock::
